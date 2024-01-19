@@ -62,6 +62,7 @@ export const makeSingleTransfer = async (req, res) =>{
 }
 
 export const makeMultipleTransactions = async (req, res) =>{
+    const { transactions } = req.body
     try {
         const batchSize = 5;
         const batchTransactions = async (transactions, batchSize) => {
