@@ -10,7 +10,7 @@ export const verifyToken = (req, res, next) => {
   }
   try {
     const decoded = jwt.verify(token, config.JWT_TOKEN_KEY);
-    res.locals.user = decoded;
+    req.user = decoded;
   } catch (err) {
     return res.status(401).json({
       status: false,

@@ -62,7 +62,8 @@ export const makeSingleTransfer = async (req, res) =>{
 }
 
 export const makeMultipleTransactions = async (req, res) =>{
-    const { transactions } = req.body
+    const { transactions } = req.body;
+    const user = req.user; 
     try {
         const batchSize = 5;
         const batchTransactions = async (transactions, batchSize) => {
@@ -110,7 +111,7 @@ export const fundWallet = async (req, res) =>{
     const headers = {
         Authorization: `Bearer ${squadcoPrivateKey}`,
       }
-      const user = res.locals.user
+      const user = req.user
       const transactionReference = generateTransactionReference();
     try {
         const sendMoney = await axios.post(`https://sandbox-api-d.squadco.com/transaction/initiate`, {
@@ -123,18 +124,18 @@ export const fundWallet = async (req, res) =>{
         }, { headers });
 
         if(sendMoney.status == 200){
-            // await User.findByIdAndUpdate(
-            //     user.user_id,
-            //     { $inc: { balance: amount } }
-            //     )
+            await User.findByIdAndUpdate(
+                user.user_id,
+                { $inc: { balance: amount } }
+                )
 
-            // await Transaction.create({
-            //     user: user.user_id,
-            //     type: TransactionType.FUNDING,
-            //     amount: parseFloat(amount),
-            //     transactionReference: transactionReference,
-            //     description: "Funding successful"
-            // })
+            await Transaction.create({
+                user: user.user_id,
+                type: TransactionType.FUNDING,
+                amount: parseFloat(amount),
+                transactionReference: transactionReference,
+                description: "Funding successful"
+            })
 
             return res.status(200).json({
                 status: true,
@@ -164,7 +165,8 @@ export const fundWallet = async (req, res) =>{
 
 export const verifyTransaction = async (req, res) => {
     try {
-        
+        const webHook = req.body
+        console.log(webHook)
     } catch (error) {
         return res.status(500).json({
             status: true,
