@@ -1,6 +1,6 @@
 import "dotenv/config";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { Transaction } from "../models/transaction.js";
 import User from "../models/user.js";
 // new user sign up
@@ -32,7 +32,7 @@ export const signUp = async (req, res) => {
                 message:"user exists already"
             });
         }
-    
+        
         const encryptedPassword = await bcrypt.hash(password, 12)
     
         const newUser = await User.create({
