@@ -32,10 +32,6 @@ export const signUp = async (req, res) => {
                 message:"user exists already"
             });
         }
-        
-        console.log(password)
-        console.log(confirm_password)
-        const encryptedPassword = await bcrypt.hash(password, 12)
     
         const newUser = await User.create({
                     first_name,
@@ -43,7 +39,7 @@ export const signUp = async (req, res) => {
                     user_name,
                     email: email,
                     organization: organization,
-                    password: encryptedPassword
+                    password: password
             })
     
         const jwt_token = await jwt.sign({
@@ -86,7 +82,7 @@ export const signIn = async (req, res) =>{
             });
         }
         
-        if(user.email && (await bcrypt.compare(password, user.password))){
+        if(user.email && (password == user.password)){
                 const jwt_token = await jwt.sign({
                     user_id: user._id,
                     email: email
