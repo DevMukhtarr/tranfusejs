@@ -42,7 +42,7 @@ export const signUp = async (req, res) => {
                     password: password
             })
     
-        const jwt_token = await jwt.sign({
+        const jwt_token = jwt.sign({
             user_id: newUser._id,
             email: email
         }, process.env.JWT_TOKEN_KEY, {
