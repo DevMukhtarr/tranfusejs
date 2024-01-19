@@ -5,8 +5,9 @@ const app = express();
 import authroute from './routes/authroute.js';
 import mainroute from './routes/mainroute.js';
 import profileroute from './routes/profileroute.js';
+import cors from "cors"
 
-
+app.use(cors())
 app.use(
     express.urlencoded({
       extended: false,

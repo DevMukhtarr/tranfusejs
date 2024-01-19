@@ -129,14 +129,6 @@ export const fundWallet = async (req, res) =>{
                 { $inc: { balance: amount } }
                 )
 
-            await Transaction.create({
-                user: user.user_id,
-                type: TransactionType.FUNDING,
-                amount: parseFloat(amount),
-                transactionReference: transactionReference,
-                description: "Funding successful"
-            })
-
             return res.status(200).json({
                 status: true,
                 message:"Transaction Processing, Follow checkout url to complete transaction",
@@ -166,6 +158,26 @@ export const fundWallet = async (req, res) =>{
 export const verifyTransaction = async (req, res) => {
     try {
         const webHook = req.body
+
+        const user = await User.findOne({email: webHook.Body.email})
+        
+        if(webHook){
+            if(webHook.Event == 'charge_successful'){
+                await User.updateOne({ 
+                    email: webHook.Body.email }, 
+                    { $inc: { balance: parseFloat(webHook.Body.amount)/100 } 
+                });
+
+                await Transaction.create({
+                    user: user._id,
+                    type: TransactionType.FUNDING,
+                    amount: parseFloat(webHook.Body.amount)/100,
+                    transactionReference: webHook.TransactionRef,
+                    description: "Funding successful"
+                })
+            }
+        }
+
         console.log(webHook)
     } catch (error) {
         return res.status(500).json({
