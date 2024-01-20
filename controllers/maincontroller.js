@@ -62,7 +62,7 @@ export const makeSingleTransfer = async (req, res) =>{
 }
 
 export const makeMultipleTransactions = async (req, res) =>{
-    const { transactions } = req.body;
+    const transactions_array = req.body;
     const user = req.user; 
     try {
         const batchSize = 5;
@@ -96,7 +96,7 @@ export const makeMultipleTransactions = async (req, res) =>{
             return responses;
           };
           
-          batchTransactions(transactions, batchSize);
+          batchTransactions(transactions_array, batchSize);
 
     } catch (error) {
         return res.status(500).json({
