@@ -258,7 +258,6 @@ export const riskAssessment = async (req, res) => {
             service
          } = req.body;
     try {
-
         const riskAssessment = await axios.post(`https://us-for-us.onrender.com/predict`, {
             "Transaction Amount": transaction_amount,
             "Historical Transaction Amount": historical_transaction_amount,
@@ -269,12 +268,28 @@ export const riskAssessment = async (req, res) => {
         });
 
         if(riskAssessment.status == 200){
-            
+            if(riskAssessment.data.risk_score < 0.3){
+                return res.status(200).json({
+                    status: true,
+                    message: "Less risk",
+                    data: {
+                        score: riskAssessment.data.risk_score
+                    }
+                }) 
+            }
+            if(riskAssessment.data.risk_score > 0.3){
+                return res.status(200).json({
+                    status: true,
+                    message: "High risk",
+                    data: {
+                        score: riskAssessment.data.risk_score
+                    }
+                }) 
+            }
         }
-
     } catch (error) {
         return res.status(500).json({
-            status: true,
+            status: false,
             message:"An error occured" + error
         }) 
     }
