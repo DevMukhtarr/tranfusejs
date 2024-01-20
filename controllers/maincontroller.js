@@ -190,11 +190,6 @@ export const fundWallet = async (req, res) =>{
         }, { headers });
 
         if(sendMoney.status == 200){
-            await User.findByIdAndUpdate(
-                user.user_id,
-                { $inc: { balance: amount } }
-                )
-
             return res.status(200).json({
                 status: true,
                 message:"Transaction Processing, Follow checkout url to complete transaction",
@@ -250,5 +245,37 @@ export const verifyTransaction = async (req, res) => {
             status: true,
             message:"An error occured" + error
         })
+    }
+}
+
+export const riskAssessment = async (req, res) => {
+        const { 
+            transaction_amount,
+            historical_transaction_amount,
+            frequency,
+            time_of_day,
+            location,
+            service
+         } = req.body;
+    try {
+
+        const riskAssessment = await axios.post(`https://us-for-us.onrender.com/predict`, {
+            "Transaction Amount": transaction_amount,
+            "Historical Transaction Amount": historical_transaction_amount,
+            "Frequency": frequency,
+            "Time of Day":  time_of_day,
+            "Location": location,
+            "Service Type": service
+        });
+
+        if(riskAssessment.status == 200){
+            
+        }
+
+    } catch (error) {
+        return res.status(500).json({
+            status: true,
+            message:"An error occured" + error
+        }) 
     }
 }
