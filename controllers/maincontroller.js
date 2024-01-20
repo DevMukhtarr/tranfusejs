@@ -73,9 +73,12 @@ export const makeSingleTransfer = async (req, res) =>{
 
 export const makeMultipleTransactions = async (req, res) => {
     const transactions_array = req.body
-    const total_amount = req.body;
+    const total_amount = transactions_array.reduce((total, transaction) => {
+        return total + parseFloat(transaction.amount || 0);
+      }, 0);
 
     console.log(transactions_array);
+    console.log(total_amount)
     const user = req.user;
     try {
       const batchSize = 5;
