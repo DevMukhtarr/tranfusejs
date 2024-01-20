@@ -72,8 +72,7 @@ export const makeSingleTransfer = async (req, res) =>{
 }
 
 export const makeMultipleTransactions = async (req, res) => {
-    // const { transactions_array, total } = req.body;
-    const transactions_array = req.body;
+    const { transactions_array, total } = req.body;
     console.log(transactions_array);
     const user = req.user;
     try {
