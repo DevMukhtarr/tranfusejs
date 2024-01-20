@@ -32,6 +32,7 @@ export const makeSingleTransfer = async (req, res) =>{
                 "account_name": account_name
             }, { headers })
            
+            console.log(transfer.data)
             if(transfer.status == 200){
                 return res.status(200).json({
                     status: true,
