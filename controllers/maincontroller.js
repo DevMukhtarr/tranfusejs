@@ -93,7 +93,9 @@ export const makeMultipleTransactions = async (req, res) =>{
               }
             }
           
-            return responses;
+            return res.status(200).json({
+                responses
+            });
           };
           
           batchTransactions(transactions_array, batchSize);
