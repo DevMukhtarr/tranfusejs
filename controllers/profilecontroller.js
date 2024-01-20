@@ -15,7 +15,7 @@ export const editProfile = async (req, res) => {
         organization
      } = req.body
     try {
-        const user_id = res.locals.user.user_id;
+        const user_id = req.user.user_id;
 
         const user = await User.findById(user_id);
 
@@ -75,7 +75,7 @@ export const editProfile = async (req, res) => {
 
 export const getProfile = async (req, res) => {
     try {
-        const user_id = res.locals.user.user_id;
+        const user_id = req.user.user_id;
 
         const user = await User.findById(user_id);
 
