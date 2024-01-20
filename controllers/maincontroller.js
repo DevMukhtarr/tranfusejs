@@ -61,55 +61,106 @@ export const makeSingleTransfer = async (req, res) =>{
     }
 }
 
-export const makeMultipleTransactions = async (req, res) =>{
+export const makeMultipleTransactions = async (req, res) => {
     const transactions_array = req.body;
-    const user = req.user; 
+    const user = req.user;
     try {
-        const batchSize = 5;
-        const batchTransactions = async (transactions, batchSize) => {
-            for (let i = 0; i < transactions.length; i += batchSize) {
-              const batch = transactions.slice(i, i + batchSize);
-              await sendBatch(batch);
-            }
-          };
-          
-          const sendBatch = async (batch) => {
-            const responses = [];
-            for (const transaction of batch) {
-              try {
-                const makeTransaction = await axios.post('https://sandbox-api-d.squadco.com/payout/transfer', transaction, {
-                  headers,
-                });
-          
-                responses.push({
-                  status: makeTransaction.status,
-                  data: makeTransaction.data,
-                });
-              } catch (error) {
-                responses.push({
-                  status: error.response ? error.response.status : 500,
-                  error: error.message,
-                });
-              }
-            }
-          
-            return res.status(200).json({
-                status: true,
-                data: { 
-                    responses
-                 }
-            });
-          };
-          
-          batchTransactions(transactions_array, batchSize);
-
+      const batchSize = 5;
+      const responses = await batchTransactions(transactions_array, batchSize);
+  
+      return res.status(200).json({
+        status: true,
+        data: responses,
+      });
     } catch (error) {
-        return res.status(500).json({
-            status: false,
-            message:"An error occured " + error 
-        })
+      return res.status(500).json({
+        status: false,
+        message: "An error occurred " + error,
+      });
     }
-}
+  };
+  
+  const batchTransactions = async (transactions, batchSize) => {
+    const responses = [];
+    for (let i = 0; i < transactions.length; i += batchSize) {
+      const batch = transactions.slice(i, i + batchSize);
+      const batchResponse = await sendBatch(batch);
+      responses.push(...batchResponse);
+    }
+    return responses;
+  };
+  
+  const sendBatch = async (batch) => {
+    const responses = [];
+    for (const transaction of batch) {
+      try {
+        const makeTransaction = await axios.post('https://sandbox-api-d.squadco.com/payout/transfer', transaction, {
+          headers,
+        });
+  
+        responses.push({
+          status: makeTransaction.status,
+          data: makeTransaction.data,
+        });
+      } catch (error) {
+        responses.push({
+          status: error.response ? error.response.status : 500,
+          error: error.message,
+        });
+      }
+    }
+  
+    return responses;
+  };
+// export const makeMultipleTransactions = async (req, res) =>{
+//     const transactions_array = req.body;
+//     const user = req.user; 
+//     try {
+//         const batchSize = 5;
+//         const batchTransactions = async (transactions, batchSize) => {
+//             for (let i = 0; i < transactions.length; i += batchSize) {
+//               const batch = transactions.slice(i, i + batchSize);
+//               await sendBatch(batch);
+//             }
+//           };
+          
+//           const sendBatch = async (batch) => {
+//             const responses = [];
+//             for (const transaction of batch) {
+//               try {
+//                 const makeTransaction = await axios.post('https://sandbox-api-d.squadco.com/payout/transfer', transaction, {
+//                   headers,
+//                 });
+          
+//                 responses.push({
+//                   status: makeTransaction.status,
+//                   data: makeTransaction.data,
+//                 });
+//               } catch (error) {
+//                 responses.push({
+//                   status: error.response ? error.response.status : 500,
+//                   error: error.message,
+//                 });
+//               }
+//             }
+          
+//             return res.status(200).json({
+//                 status: true,
+//                 data: { 
+//                     responses
+//                  }
+//             });
+//           };
+          
+//           batchTransactions(transactions_array, batchSize);
+
+//     } catch (error) {
+//         return res.status(500).json({
+//             status: false,
+//             message:"An error occured " + error 
+//         })
+//     }
+// }
 
 export const fundWallet = async (req, res) =>{
     const { amount } = req.body;
