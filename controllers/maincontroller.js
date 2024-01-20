@@ -72,17 +72,19 @@ export const makeSingleTransfer = async (req, res) =>{
 }
 
 export const makeMultipleTransactions = async (req, res) => {
+    const user_id = req.user.user_id;
     const transactions_array = req.body
     const total_amount = transactions_array.reduce((total, transaction) => {
         return total + parseFloat(transaction.amount || 0);
       }, 0);
 
-    console.log(transactions_array);
-    console.log(total_amount)
-    const user = req.user;
     try {
       const batchSize = 5;
       const responses = await batchTransactions(transactions_array, batchSize);
+
+      await User.findByIdAndUpdate(user_id, { 
+        $inc: { balance: -total_amount }
+    })
   
       return res.status(200).json({
         status: true,
