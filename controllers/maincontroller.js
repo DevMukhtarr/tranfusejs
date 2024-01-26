@@ -81,7 +81,6 @@ export const makeMultipleTransactions = async (req, res) => {
     try {
       const batchSize = 5;
       const responses = await batchTransactions(transactions_array, batchSize);
-
       await User.findByIdAndUpdate(user_id, { 
         $inc: { balance: -total_amount }
     })
@@ -130,55 +129,6 @@ export const makeMultipleTransactions = async (req, res) => {
   
     return responses;
   };
-// export const makeMultipleTransactions = async (req, res) =>{
-//     const transactions_array = req.body;
-//     const user = req.user; 
-//     try {
-//         const batchSize = 5;
-//         const batchTransactions = async (transactions, batchSize) => {
-//             for (let i = 0; i < transactions.length; i += batchSize) {
-//               const batch = transactions.slice(i, i + batchSize);
-//               await sendBatch(batch);
-//             }
-//           };
-          
-//           const sendBatch = async (batch) => {
-//             const responses = [];
-//             for (const transaction of batch) {
-//               try {
-//                 const makeTransaction = await axios.post('https://sandbox-api-d.squadco.com/payout/transfer', transaction, {
-//                   headers,
-//                 });
-          
-//                 responses.push({
-//                   status: makeTransaction.status,
-//                   data: makeTransaction.data,
-//                 });
-//               } catch (error) {
-//                 responses.push({
-//                   status: error.response ? error.response.status : 500,
-//                   error: error.message,
-//                 });
-//               }
-//             }
-          
-//             return res.status(200).json({
-//                 status: true,
-//                 data: { 
-//                     responses
-//                  }
-//             });
-//           };
-          
-//           batchTransactions(transactions_array, batchSize);
-
-//     } catch (error) {
-//         return res.status(500).json({
-//             status: false,
-//             message:"An error occured " + error 
-//         })
-//     }
-// }
 
 export const fundWallet = async (req, res) =>{
     const { amount } = req.body;
@@ -295,6 +245,17 @@ export const riskAssessment = async (req, res) => {
                 }) 
             }
         }
+    } catch (error) {
+        return res.status(500).json({
+            status: false,
+            message:"An error occured" + error
+        }) 
+    }
+}
+
+export const chatBot = async( req, res ) => {
+    try {
+        
     } catch (error) {
         return res.status(500).json({
             status: false,
